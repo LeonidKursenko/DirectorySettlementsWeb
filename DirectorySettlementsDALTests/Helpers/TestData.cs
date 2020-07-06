@@ -7,11 +7,11 @@ namespace DirectorySettlementsDALTests.Helpers
 {
     internal class TestData
     {
-        public static IEnumerable<Settlement> InitData()
+        public static IEnumerable<Settlement> InitSettlementsData()
         {
             var settlement1 = new Settlement { Te = "0100000000", Nu = "АВТОНОМНА РЕСПУБЛІКА КРИМ/М.СІМФЕРОПОЛЬ" };
             var settlement2 = new Settlement { Te = "0110000000", ParentId = "0100000000", Parent = settlement1 };
-            settlement1.Children.Add(settlement2);
+            //settlement1.Children.Add(settlement2);
             return new List<Settlement>()
             {
                 settlement1,
@@ -42,6 +42,24 @@ namespace DirectorySettlementsDALTests.Helpers
                 new Settlement { Te = "0120000000"},
                 new Settlement { Te = "0200000000"},
                 new Settlement { Te = "8000000000"}
+            };
+        }
+
+        public static IEnumerable<InitialTable> InitialTableData()
+        {
+            return new List<InitialTable>()
+            {
+                new InitialTable { Te = "0100000000"},
+                new InitialTable { Te = "0110000000"},
+                new InitialTable { Te = "0110100000"},
+                new InitialTable { Te = "0110130000"},
+                new InitialTable { Te = "0110136300"},
+                new InitialTable { Te = "0110136600"},
+                new InitialTable { Te = "0110136900"},
+                new InitialTable { Te = "0110165000"},
+                new InitialTable { Te = "0110165300"},
+                new InitialTable { Te = "0110165600"},
+                new InitialTable { Te = "0110165601"}
             };
         }
     }

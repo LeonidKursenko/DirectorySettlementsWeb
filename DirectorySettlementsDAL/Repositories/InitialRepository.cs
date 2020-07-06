@@ -1,12 +1,13 @@
 ﻿using DirectorySettlementsDAL.Data;
 using DirectorySettlementsDAL.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace DirectorySettlementsDAL.Repositories
 {
-    internal class InitialRepository
+    public class InitialRepository
     {
         ApplicationContext Database { get; set; }
 
@@ -20,7 +21,7 @@ namespace DirectorySettlementsDAL.Repositories
         }
         public IEnumerable<InitialTable> GetAll()
         {
-            return Database.InitialTable;
+            return Database.InitialTable.AsNoTracking();
         }
 
         /// <summary>

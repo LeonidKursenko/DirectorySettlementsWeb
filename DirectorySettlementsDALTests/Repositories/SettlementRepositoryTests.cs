@@ -31,7 +31,7 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         #region Additional methods
         private void InitData()
         {
-            _settlements = TestData.InitData();
+            _settlements = TestData.InitSettlementsData();
             _db.Settlements.AddRange(_settlements);
             _db.SaveChanges();
         }

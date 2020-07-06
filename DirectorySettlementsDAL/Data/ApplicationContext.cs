@@ -38,7 +38,7 @@ namespace DirectorySettlementsDAL.Data
         {
             modelBuilder.Entity<InitialTable>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => e.Te);
 
                 entity.Property(e => e.Np)
                     .HasColumnName("NP")
