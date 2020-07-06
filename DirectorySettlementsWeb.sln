@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DirectorySettlementsWebApi", "DirectorySettlementsWebApi\DirectorySettlementsWebApi.csproj", "{654A6A98-FC42-43A9-9018-671088A6C5F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectorySettlementsDAL", "DirectorySettlementsDAL\DirectorySettlementsDAL.csproj", "{DA0D9B0B-9BAA-474D-B5B1-F3F61622FA07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DirectorySettlementsDAL", "DirectorySettlementsDAL\DirectorySettlementsDAL.csproj", "{DA0D9B0B-9BAA-474D-B5B1-F3F61622FA07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectorySettlementsDALTests", "DirectorySettlementsDALTests\DirectorySettlementsDALTests.csproj", "{CF2C8B42-D374-4250-A728-E2E27252F773}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{DA0D9B0B-9BAA-474D-B5B1-F3F61622FA07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA0D9B0B-9BAA-474D-B5B1-F3F61622FA07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA0D9B0B-9BAA-474D-B5B1-F3F61622FA07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF2C8B42-D374-4250-A728-E2E27252F773}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF2C8B42-D374-4250-A728-E2E27252F773}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF2C8B42-D374-4250-A728-E2E27252F773}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF2C8B42-D374-4250-A728-E2E27252F773}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
