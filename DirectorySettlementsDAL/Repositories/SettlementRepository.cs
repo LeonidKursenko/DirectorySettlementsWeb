@@ -85,7 +85,7 @@ namespace DirectorySettlementsDAL.Repositories
             if (te % 100 != 0) return te / 100 * 100;
             // Third category.
             //if (te % 1_000 != 0) return te / 1_000 * 1_000;
-            if (te % 10_000 != 0) return te / 10_000 * 10_000;
+            //if (te % 10_000 != 0) return te / 10_000 * 10_000;
             if (te % 100_000 != 0) return te / 100_000 * 100_000;
             // Second category.
             //if (te % 1_000_000 != 0) return te / 1_000_000 * 1_000_000;

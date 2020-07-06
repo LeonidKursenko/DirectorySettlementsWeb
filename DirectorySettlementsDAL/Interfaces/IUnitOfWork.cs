@@ -17,5 +17,10 @@ namespace DirectorySettlementsDAL.Interfaces
         /// Saves changes to the database.
         /// </summary>
         void Save();
+
+        /// <summary>
+        /// Fills Settlements table by using data from InitialTable.
+        /// </summary>
+        void Fill();
     }
 }

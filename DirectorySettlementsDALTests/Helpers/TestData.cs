@@ -49,17 +49,17 @@ namespace DirectorySettlementsDALTests.Helpers
         {
             return new List<InitialTable>()
             {
-                new InitialTable { Te = "0100000000"},
-                new InitialTable { Te = "0110000000"},
-                new InitialTable { Te = "0110100000"},
-                new InitialTable { Te = "0110130000"},
-                new InitialTable { Te = "0110136300"},
-                new InitialTable { Te = "0110136600"},
-                new InitialTable { Te = "0110136900"},
-                new InitialTable { Te = "0110165000"},
-                new InitialTable { Te = "0110165300"},
-                new InitialTable { Te = "0110165600"},
-                new InitialTable { Te = "0110165601"}
+                new InitialTable { Te = "0100000000", Nu = "АВТОНОМНА РЕСПУБЛІКА КРИМ/М.СІМФЕРОПОЛЬ"},
+                new InitialTable { Te = "0110000000", Nu = "МІСТА АВТОНОМНОЇ РЕСПУБЛІКИ КРИМ"},
+                new InitialTable { Te = "0110100000", Nu = "СІМФЕРОПОЛЬ"},
+                new InitialTable { Te = "0110130000", Nu = "РАЙОНИ М.СІМФЕРОПОЛЯ"},
+                new InitialTable { Te = "0110136300", Nu = "ЗАЛІЗНИЧНИЙ", Np = "Р"},
+                new InitialTable { Te = "0110136600", Nu = "КИЇВСЬКИЙ", Np = "Р"},
+                new InitialTable { Te = "0110136900", Nu = "ЦЕНТРАЛЬНИЙ", Np = "Р"},
+                new InitialTable { Te = "0110165000", Nu = "СЕЛИЩА МІСЬКОГО ТИПУ, ПІДПОРЯДКОВАНІ ЗАЛІЗНИЧНІЙ РАЙРАДІ М.СІМФЕРОПОЛЯ"},
+                new InitialTable { Te = "0110165300", Nu = "АЕРОФЛОТСЬКИЙ", Np = "Т"},
+                new InitialTable { Te = "0110165600", Nu = "ГРЕСІВСЬКИЙ", Np = "Т"},
+                new InitialTable { Te = "0110165601", Nu = "БІТУМНЕ", Np = "Щ"}
             };
         }
     }

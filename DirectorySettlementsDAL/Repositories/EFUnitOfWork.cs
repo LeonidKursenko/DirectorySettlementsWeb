@@ -56,5 +56,21 @@ namespace DirectorySettlementsDAL.Repositories
         {
             _db.SaveChanges();
         }
+
+        public void Fill()
+        {
+            Settlements.Clear();
+            var initialData = _initialRepository.GetAll();
+            foreach(var settlement in initialData)
+            {
+                Settlements.Create(new Settlement
+                {
+                    Te = settlement.Te,
+                    Np = settlement.Np,
+                    Nu = settlement.Nu
+                });
+            }
+            Save();
+        }
     }
 }
