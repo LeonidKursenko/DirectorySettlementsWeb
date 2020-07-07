@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DirectorySettlementsDAL.Interfaces
 {
@@ -16,16 +17,16 @@ namespace DirectorySettlementsDAL.Interfaces
         /// <summary>
         /// Saves changes to the database.
         /// </summary>
-        void Save();
+        Task SaveAsync();
 
         /// <summary>
         /// Fills Settlements table by using data from InitialTable.
         /// </summary>
-        void Fill();
+        Task FillAsync();
 
         /// <summary>
         /// Removes All data from Settlements table.
         /// </summary>
-        void Clear();
+        Task ClearAsync();
     }
 }

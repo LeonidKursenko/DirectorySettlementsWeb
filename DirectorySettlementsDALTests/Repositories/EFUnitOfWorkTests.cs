@@ -36,12 +36,12 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void SaveTest()
         {
             // Arrange
-            _manager.Fill();
+            _manager.FillAsync().Wait();
             // Act
-            _manager.Save();
+            _manager.SaveAsync().Wait();
             // Assert 
             int initialCounter = _db.InitialTable.Count();
-            var settlements = _manager.Settlements.GetAll();
+            var settlements = _manager.Settlements.GetAllAsync().GetAwaiter().GetResult();
             Assert.NotNull(settlements);
             Assert.NotEmpty(settlements);
             Assert.Equal(initialCounter, settlements.Count());
@@ -62,12 +62,12 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void ClearTest()
         {
             // Arrange
-            _manager.Fill();
+            _manager.FillAsync().Wait();
             // Act
-            _manager.Clear();
+            _manager.ClearAsync().Wait();
             // Assert 
             int initialCounter = _db.InitialTable.Count();
-            var settlements = _manager.Settlements.GetAll();
+            var settlements = _manager.Settlements.GetAllAsync().GetAwaiter().GetResult();
             Assert.NotNull(settlements);
             Assert.Empty(settlements);
             Assert.NotEqual(initialCounter, settlements.Count());
@@ -81,10 +81,10 @@ namespace DirectorySettlementsDAL.Repositories.Tests
             ApplicationContext db = new ApplicationContext(СonnectionString);
             IUnitOfWork manager = new EFUnitOfWork(db);
             // Act
-            manager.Fill();
+            manager.FillAsync().Wait();
             // Assert 
             int initialCounter = db.InitialTable.Count();
-            var settlements = manager.Settlements.GetAll();
+            var settlements = manager.Settlements.GetAllAsync().GetAwaiter().GetResult();
             Assert.NotNull(settlements);
             Assert.NotEmpty(settlements);
             Assert.Equal(initialCounter, settlements.Count());
@@ -98,10 +98,10 @@ namespace DirectorySettlementsDAL.Repositories.Tests
             ApplicationContext db = new ApplicationContext(СonnectionString);
             IUnitOfWork manager = new EFUnitOfWork(db);
             // Act
-            manager.Clear();
+            manager.ClearAsync().Wait();
             // Assert 
             int initialCounter = db.InitialTable.Count();
-            var settlements = manager.Settlements.GetAll();
+            var settlements = manager.Settlements.GetAllAsync().GetAwaiter().GetResult();
             Assert.NotNull(settlements);
             Assert.Empty(settlements);
             Assert.NotEqual(initialCounter, settlements.Count());

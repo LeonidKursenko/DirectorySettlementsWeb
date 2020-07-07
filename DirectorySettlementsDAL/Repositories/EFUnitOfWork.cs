@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Transactions;
 
 namespace DirectorySettlementsDAL.Repositories
@@ -59,23 +60,23 @@ namespace DirectorySettlementsDAL.Repositories
             }
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            _db.SaveChanges();
+            await _db.SaveChangesAsync();
         }
 
-        public void Fill()
+        public async Task FillAsync()
         {
-            Settlements.Clear();
+            await Settlements.ClearAsync();
             var initialData = _initialRepository.GetAll().ToList();
             
             var settlements = _mapper.Map<List<Settlement>>(initialData);
-            Settlements.AddRange(settlements);
+            await Settlements.AddRangeAsync(settlements);
         }
 
-        public void Clear()
+        public async Task ClearAsync()
         {
-            Settlements.Clear();
+            await Settlements.ClearAsync();
         }
     }
 }

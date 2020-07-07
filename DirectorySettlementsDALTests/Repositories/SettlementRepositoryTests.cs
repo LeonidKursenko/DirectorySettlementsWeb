@@ -67,10 +67,10 @@ namespace DirectorySettlementsDAL.Repositories.Tests
             // Arange
             Settlement settlement = new Settlement { Te = te };
             // Act
-            _repository.Create(settlement);
+            _repository.CreateAsync(settlement).Wait();
             _db.SaveChanges();
             // Assert
-            Settlement settlementFromDb = _repository.Get(te);
+            Settlement settlementFromDb = _repository.GetAsync(te).GetAwaiter().GetResult();
             Assert.NotNull(settlementFromDb);
             Assert.Equal(settlement.Te, settlementFromDb.Te);
             Show($"Te='{settlementFromDb.Te}', ParentId='{settlementFromDb.ParentId}'");
@@ -87,7 +87,7 @@ namespace DirectorySettlementsDAL.Repositories.Tests
             // Arange
             Settlement settlement = new Settlement { Te = te };
             // Act and assert
-            var ex = Assert.Throws<CreateOperationException>(() => _repository.Create(settlement));
+            var ex = Assert.Throws<CreateOperationException>(() => _repository.CreateAsync(settlement).GetAwaiter().GetResult());
             Show(ex.Message);
         }
 
@@ -99,7 +99,7 @@ namespace DirectorySettlementsDAL.Repositories.Tests
             // Arange
             Settlement settlement = new Settlement { Te = te };
             // Assert
-            var ex = Assert.Throws<CreateOperationException>(() => _repository.Create(settlement));
+            var ex = Assert.Throws<CreateOperationException>(() => _repository.CreateAsync(settlement).GetAwaiter().GetResult());
             Show(ex.Message);
         }
         #endregion
@@ -111,12 +111,12 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void DeleteTest(string te)
         {
             // Arange
-            var settlement = _repository.Get(te);
+            var settlement = _repository.GetAsync(te).GetAwaiter().GetResult();
             // Act
-            _repository.Delete(te);
+            _repository.DeleteAsync(te).Wait();
             _db.SaveChanges();
             // Assert
-            settlement = _repository.Get(te);
+            settlement = _repository.GetAsync(te).GetAwaiter().GetResult();
             Assert.Null(settlement);
         }
 
@@ -126,9 +126,9 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void TryDeleteWithUnknownTeTest(string te)
         {
             // Arange
-            var settlement = _repository.Get(te);
+            var settlement = _repository.GetAsync(te);
             // Act and assert
-            var exception = Assert.Throws<DeleteOperationException>(() => _repository.Delete(te));
+            var exception = Assert.Throws<DeleteOperationException>(() => _repository.DeleteAsync(te).GetAwaiter().GetResult());
             Show(exception.Message);
         }
 
@@ -138,9 +138,9 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void TryDeleteWithChildrenTest(string te)
         {
             // Arange
-            var settlement = _repository.Get(te);
+            var settlement = _repository.GetAsync(te);
             // Act and assert
-            var exception = Assert.Throws<DeleteOperationException>(() => _repository.Delete(te));
+            var exception = Assert.Throws<DeleteOperationException>(() => _repository.DeleteAsync(te).GetAwaiter().GetResult());
             Show(exception.Message);
         }
 
@@ -150,15 +150,15 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void DeleteAllTest(string te)
         {
             // Arange
-            var settlement = _repository.Get(te);
+            var settlement = _repository.GetAsync(te).GetAwaiter().GetResult();
             string childTe = settlement.Children.FirstOrDefault().Te;
             // Act
-            _repository.DeleteAll(te);
+            _repository.DeleteAllAsync(te).Wait();
             _db.SaveChanges();
             // Assert
-            settlement = _repository.Get(te);
+            settlement = _repository.GetAsync(te).GetAwaiter().GetResult();
             Assert.Null(settlement);
-            var child = _repository.Get(childTe);
+            var child = _repository.GetAsync(childTe).GetAwaiter().GetResult();
             Assert.Null(child);
         }
         #endregion
@@ -170,7 +170,7 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void GetTest(string te)
         {
             // Act
-            Settlement settlement = _repository.Get(te);
+            Settlement settlement = _repository.GetAsync(te).GetAwaiter().GetResult();
             // Assert
             Assert.NotNull(settlement);
             Assert.Equal(te, settlement.Te);
@@ -184,7 +184,7 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void TryGetNotExistsSettlementTest(string te)
         {
             // Act
-            Settlement settlement = _repository.Get(te);
+            Settlement settlement = _repository.GetAsync(te).GetAwaiter().GetResult();
             // Assert
             Assert.Null(settlement);
         }
@@ -221,7 +221,7 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void GetAllTest()
         {
             // Act
-            var settlements = _repository.GetAll();
+            var settlements = _repository.GetAllAsync().GetAwaiter().GetResult();
             // Assert
             Assert.NotEmpty(settlements);
         }
@@ -234,14 +234,14 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void UpdateTest(string te)
         {
             // Arange
-            Settlement settlement = _repository.Get(te);
+            Settlement settlement = _repository.GetAsync(te).GetAwaiter().GetResult();
             string newNu = "NewName";
             string newNp = "M";
             settlement.Nu = newNu;
             settlement.Np = newNp;
             // Act
-            _repository.Update(settlement);
-            Settlement settlementUpdated = _repository.Get(te);
+            _repository.UpdateAsync(settlement).Wait();
+            Settlement settlementUpdated = _repository.GetAsync(te).GetAwaiter().GetResult();
             // Assert
             Assert.Equal(newNu, settlementUpdated.Nu);
             Assert.Equal(newNp, settlementUpdated.Np);
@@ -253,12 +253,12 @@ namespace DirectorySettlementsDAL.Repositories.Tests
         public void ClearTest()
         {
             // Arange
-            int counter = _repository.GetAll().Count();
+            int counter = _repository.GetAllAsync().GetAwaiter().GetResult().Count();
             // Act
-            _repository.Clear();
+            _repository.ClearAsync().GetAwaiter().GetResult();
             // Assert
-            Assert.Empty(_repository.GetAll());
-            Assert.NotEqual(counter, _repository.GetAll().Count());
+            Assert.Empty(_repository.GetAllAsync().GetAwaiter().GetResult());
+            Assert.NotEqual(counter, _repository.GetAllAsync().GetAwaiter().GetResult().Count());
         }
     }
 }

@@ -27,10 +27,10 @@ namespace DirectorySettlementsWebApi.Controllers
 
         // GET: api/Settlements
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Settlement>>> GetSettlements()
+        public async Task<IEnumerable<Settlement>> GetSettlements()
         {
             //return await _context.Settlements.ToListAsync();
-            return _manager.Settlements.GetAll().ToList();
+            return await _manager.Settlements.GetAllAsync();
         }
 
         // GET: api/Settlements/5

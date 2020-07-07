@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace DirectorySettlementsDAL.Repositories
 {
@@ -29,17 +30,17 @@ namespace DirectorySettlementsDAL.Repositories
 
         private List<string> _allExistsTe;
 
-        public void Create(Settlement node)
+        public async Task CreateAsync(Settlement node)
         {
             _allExistsTe = Database.Settlements.Select(s => s.Te).ToList();
-            Add(node);
-            Database.SaveChanges();
+            await AddAsync(node);
+            await Database.SaveChangesAsync();
         }
 
         #region Additional methods
-        public void AddRange(IEnumerable<Settlement> nodes)
+        public async Task AddRangeAsync(IEnumerable<Settlement> nodes)
         {
-            _allExistsTe = Database.Settlements.Select(s => s.Te).ToList();
+            _allExistsTe = await Database.Settlements.Select(s => s.Te).ToListAsync();
             var settlements = nodes.ToList();
             foreach (var settlement in settlements)
             {
@@ -48,23 +49,23 @@ namespace DirectorySettlementsDAL.Repositories
             }
             try
             {
-                Database.Settlements.AddRange(settlements);
+                await Database.Settlements.AddRangeAsync(settlements);
             }
             catch(Exception ex)
             {
                 throw new CreateOperationException($"Failed to add range of settlements. " + ex.Message);
             }
-            Database.SaveChanges();
+            await Database.SaveChangesAsync();
         }
 
         /// <summary>
         /// Adds one node to the Settlements repository without savings.
         /// </summary>
         /// <param name="node"></param>
-        private void Add(Settlement node)
+        private async Task AddAsync(Settlement node)
         {
             
-            var settlement = Get(node.Te);
+            var settlement = await GetAsync(node.Te);
             if (settlement != null)
             {
                 throw new CreateOperationException($"Failed to create a new node with existed Te='{node.Te}'.");
@@ -161,9 +162,9 @@ namespace DirectorySettlementsDAL.Repositories
         }
         #endregion
 
-        public void Delete(string te)
+        public async Task DeleteAsync(string te)
         {
-            Settlement settlement = Get(te);
+            Settlement settlement = await GetAsync(te);
             if (settlement == null)
                 throw new DeleteOperationException($"Failed to delete node with unknown Te='{te}'.");
             if (settlement.Children.Any() == true)
@@ -179,54 +180,61 @@ namespace DirectorySettlementsDAL.Repositories
             }
         }
 
-        public void DeleteAll(string te)
+        public async Task DeleteAllAsync(string te)
         {
-            Settlement settlement = Get(te);
+            Settlement settlement = await GetAsync(te);
             if (settlement == null)
                 throw new DeleteOperationException($"Failed to delete node with unknown Te='{te}'.");
-            DeleteAll(settlement);
-            Delete(settlement.Te);
+            await DeleteAllAsync(settlement);
+            await DeleteAsync(settlement.Te);
             //Database.Settlements.Remove(settlement);
-            Database.SaveChanges();
+            await Database.SaveChangesAsync();
         }
 
-        private void DeleteAll(Settlement settlement)
+        private async Task DeleteAllAsync(Settlement settlement)
         {
             var childrens = settlement.Children.ToList();
             foreach (var child in childrens)
             {
-                DeleteAll(child);
-                Delete(child.Te);
+                await DeleteAllAsync(child);
+                await DeleteAsync(child.Te);
                 //Database.Settlements.Remove(child);
                 //Database.SaveChanges();
             }
-            Database.SaveChanges();
+            await Database.SaveChangesAsync();
         }
-        public void Clear()
+        public async Task ClearAsync()
         {
-            Database.Database.ExecuteSqlCommand("TRUNCATE TABLE [Settlements]");
-            //Database.Settlements.RemoveRange(Database.Settlements);
-            //Database.SaveChanges();
+            try
+            {
+                _ = await Database.Database.ExecuteSqlRawAsync("TRUNCATE TABLE [Settlements]");
+            }
+            catch
+            {
+                Database.Settlements.RemoveRange(Database.Settlements);
+                await Database.SaveChangesAsync();
+            }
         }
 
         public IEnumerable<Settlement> Find(Func<Settlement, bool> predicate)
         {
-            return Database.Settlements.Where(predicate).ToList();
+            return Database.Settlements.Where(predicate);
         }
 
-        public Settlement Get(string te)
+        public async Task<Settlement> GetAsync(string te)
         {
-            return Database.Settlements.Find(te);
+            return await Database.Settlements.FindAsync(te);
         }
 
-        public IEnumerable<Settlement> GetAll()
+        public async Task<IEnumerable<Settlement>> GetAllAsync()
         {
-            return Database.Settlements;
+            return await Database.Settlements.ToListAsync();
         }
 
-        public void Update(Settlement node)
+        public async Task UpdateAsync(Settlement node)
         {
             Database.Entry(node).State = EntityState.Modified;
+            await Database.SaveChangesAsync();
         }
 
         /// <summary>
