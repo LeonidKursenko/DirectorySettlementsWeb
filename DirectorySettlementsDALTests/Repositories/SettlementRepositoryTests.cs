@@ -102,23 +102,6 @@ namespace DirectorySettlementsDAL.Repositories.Tests
             var ex = Assert.Throws<CreateOperationException>(() => _repository.Create(settlement));
             Show(ex.Message);
         }
-
-        [Theory]
-        [InlineData("")]
-        [InlineData("329")]
-        [InlineData("3223242314234234219")]
-        [InlineData("0120 000000")]
-        [InlineData("01700d0000")]
-        [InlineData("0123456789")]
-        [InlineData("0150000001")]
-        public void CheckIncorrectTeTest(string te)
-        {
-            // Arange
-            Settlement settlement = new Settlement { Te = te };
-            // Assert
-            var ex = Assert.Throws<CreateOperationException>(() => _repository.SetParentId(settlement));
-            Show(ex.Message);
-        }
         #endregion
 
         #region Delete tests

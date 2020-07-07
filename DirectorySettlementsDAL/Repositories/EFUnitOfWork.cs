@@ -1,9 +1,12 @@
-﻿using DirectorySettlementsDAL.Data;
+﻿using AutoMapper;
+using DirectorySettlementsDAL.Data;
 using DirectorySettlementsDAL.Entities;
 using DirectorySettlementsDAL.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Transactions;
 
 namespace DirectorySettlementsDAL.Repositories
 {
@@ -12,14 +15,17 @@ namespace DirectorySettlementsDAL.Repositories
     /// </summary>
     public class EFUnitOfWork : IUnitOfWork
     {
-        private ApplicationContext _db;
-        private SettlementRepository _settlementRepository;
-        private InitialRepository _initialRepository;
+        private readonly ApplicationContext _db;
+        private readonly SettlementRepository _settlementRepository;
+        private readonly InitialRepository _initialRepository;
+        private readonly Mapper _mapper;
 
         public IRepository<Settlement> Settlements => _settlementRepository;
 
         public EFUnitOfWork(ApplicationContext context)
         {
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<InitialTable, Settlement>());
+            _mapper = new Mapper(config);
             _db = context;
             _settlementRepository = new SettlementRepository(_db);
             _initialRepository = new InitialRepository(_db);
@@ -47,6 +53,7 @@ namespace DirectorySettlementsDAL.Repositories
                 if (disposing)
                 {
                     _settlementRepository.Dispose();
+                    _initialRepository.Dispose();
                 }
                 _disposed = true;
             }
@@ -60,17 +67,15 @@ namespace DirectorySettlementsDAL.Repositories
         public void Fill()
         {
             Settlements.Clear();
-            var initialData = _initialRepository.GetAll();
-            foreach(var settlement in initialData)
-            {
-                Settlements.Create(new Settlement
-                {
-                    Te = settlement.Te,
-                    Np = settlement.Np,
-                    Nu = settlement.Nu
-                });
-            }
-            Save();
+            var initialData = _initialRepository.GetAll().ToList();
+            
+            var settlements = _mapper.Map<List<Settlement>>(initialData);
+            Settlements.AddRange(settlements);
+        }
+
+        public void Clear()
+        {
+            Settlements.Clear();
         }
     }
 }

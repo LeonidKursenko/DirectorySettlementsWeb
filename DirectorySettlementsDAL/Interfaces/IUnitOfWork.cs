@@ -22,5 +22,10 @@ namespace DirectorySettlementsDAL.Interfaces
         /// Fills Settlements table by using data from InitialTable.
         /// </summary>
         void Fill();
+
+        /// <summary>
+        /// Removes All data from Settlements table.
+        /// </summary>
+        void Clear();
     }
 }

@@ -5,9 +5,7 @@ using DirectorySettlementsDAL.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace DirectorySettlementsDAL.Repositories
@@ -29,10 +27,45 @@ namespace DirectorySettlementsDAL.Repositories
             Database = database;
         }
 
+        private List<string> _allExistsTe;
+
         public void Create(Settlement node)
         {
+            _allExistsTe = Database.Settlements.Select(s => s.Te).ToList();
+            Add(node);
+            Database.SaveChanges();
+        }
+
+        #region Additional methods
+        public void AddRange(IEnumerable<Settlement> nodes)
+        {
+            _allExistsTe = Database.Settlements.Select(s => s.Te).ToList();
+            var settlements = nodes.ToList();
+            foreach (var settlement in settlements)
+            {
+                SetParentId(settlement);
+                _allExistsTe.Add(settlement.Te);
+            }
+            try
+            {
+                Database.Settlements.AddRange(settlements);
+            }
+            catch(Exception ex)
+            {
+                throw new CreateOperationException($"Failed to add range of settlements. " + ex.Message);
+            }
+            Database.SaveChanges();
+        }
+
+        /// <summary>
+        /// Adds one node to the Settlements repository without savings.
+        /// </summary>
+        /// <param name="node"></param>
+        private void Add(Settlement node)
+        {
+            
             var settlement = Get(node.Te);
-            if(settlement != null)
+            if (settlement != null)
             {
                 throw new CreateOperationException($"Failed to create a new node with existed Te='{node.Te}'.");
             }
@@ -40,37 +73,35 @@ namespace DirectorySettlementsDAL.Repositories
             {
                 SetParentId(node);
                 Database.Settlements.Add(node);
-                //Database.SaveChanges();
+                _allExistsTe.Add(node.Te);
             }
-            catch(CreateOperationException ex)
+            catch (CreateOperationException ex)
             {
                 throw ex;
             }
-            catch(InvalidOperationException ex)
+            catch (InvalidOperationException ex)
             {
-                throw new CreateOperationException("Failed to create a new node. " + ex.Message );
+                throw new CreateOperationException($"Failed to create a new node with Te={node.Te}. " + ex.Message);
             }
         }
 
-        #region Additional methods
         /// <summary>
         /// Sets ParentId.
         /// </summary>
         /// <param name="settlement">Settlement that needs ParentId.</param>
-        public void SetParentId(Settlement settlement)
+        private void SetParentId(Settlement settlement)
         {
             Regex regex = new Regex(@"^\d{10}$");
             Match match = regex.Match(settlement.Te);
             if (match.Success == false)
                 throw new CreateOperationException($"Failed to create a new node with incorrect format of the Te='{settlement.Te}'.");
             long te = Int64.Parse(settlement.Te);
-            long parentTe = GetParentId(te);
-
-            string parentId = parentTe != 0 ? parentTe.ToString("D10") : null;
-            if(parentId != null && Get(parentId) == null)
+            string parentTe = GetParentId(te);
+            bool isValidParent = ValidateParentTe(settlement.Te, parentTe);
+            if (isValidParent == false)
                 throw new CreateOperationException($"Failed to create a new node with incorrect Te='{settlement.Te}' " +
-                    $"because it has no parent element with Te='{parentId}'.");
-            settlement.ParentId = parentId;
+                    $"because it has no parent element with Te='{parentTe}'.");
+            settlement.ParentId = parentTe;
         }
 
         /// <summary>
@@ -78,20 +109,55 @@ namespace DirectorySettlementsDAL.Repositories
         /// </summary>
         /// <param name="te">Te code of a child element.</param>
         /// <returns>ParentId.</returns>
-        private static long GetParentId(long te)
+        private string GetParentId(long te)
         {
-            long parentTe = 0;
-            // Fourth category.
-            if (te % 100 != 0) return te / 100 * 100;
-            // Third category.
-            //if (te % 1_000 != 0) return te / 1_000 * 1_000;
-            //if (te % 10_000 != 0) return te / 10_000 * 10_000;
-            if (te % 100_000 != 0) return te / 100_000 * 100_000;
-            // Second category.
-            //if (te % 1_000_000 != 0) return te / 1_000_000 * 1_000_000;
-            //if (te % 10_000_000 != 0) return te / 10_000_000 * 10_000_000;
-            if (te % 100_000_000 != 0) return te / 100_000_000 * 100_000_000;
-            return parentTe;
+            for (int i = 100; i <= 100_000_000; i *= 10)
+            {
+                if (te % i != 0)
+                {
+                    long parentTe = te / i * i;
+                    string parentId = parentTe.ToString("D10");
+                    if (_allExistsTe.Contains(parentId) == true) return parentId;
+                    //Settlement parent = Get(parentId);
+                    //if (parent != null) return parentId;
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets category of settlement.
+        /// Fourth category 1-2 digits number.Example, 01 222 333 44
+        /// Third category 3-5 digits number.Example, 01 222 333 00
+        /// Second category 6-8 digits number.Example, 01 222 000 00
+        /// First category 9-10 digits number. Example, 01 000 000 00
+        /// </summary>
+        /// <param name="te">Te code of the settlement.</param>
+        /// <returns></returns>
+        private int GetCategory(string te)
+        {
+            long id = Int64.Parse(te);
+            for (int i = 100, category = 4; i <= 100_000_000; i *= 1000, category--)
+                if (id % i != 0) return category;
+
+            // First category.
+            return 1;
+        }
+
+        /// <summary>
+        /// Checks if settlement has valid parent.
+        /// </summary>
+        /// <param name="te">Settlement Te.</param>
+        /// <param name="parentTe">Parent Te.</param>
+        /// <returns>Returns false if difference between categories of the settlement and parent settlement
+        /// is bigger then one.</returns>
+        private bool ValidateParentTe(string te, string parentTe)
+        {
+            int category = GetCategory(te);
+            if (category == 1 && parentTe == null) return true;
+            if (parentTe == null) return false;
+            if (category - GetCategory(parentTe) > 1) return false;
+            return true;
         }
         #endregion
 
@@ -100,7 +166,7 @@ namespace DirectorySettlementsDAL.Repositories
             Settlement settlement = Get(te);
             if (settlement == null)
                 throw new DeleteOperationException($"Failed to delete node with unknown Te='{te}'.");
-            if (settlement.Children.Count() > 0)
+            if (settlement.Children.Any() == true)
                 throw new DeleteOperationException($"Failed to delete node Te='{te}' with child nodes.");
             try
             {
@@ -118,21 +184,29 @@ namespace DirectorySettlementsDAL.Repositories
             Settlement settlement = Get(te);
             if (settlement == null)
                 throw new DeleteOperationException($"Failed to delete node with unknown Te='{te}'.");
-            while(settlement.Children.Count() > 0)
-            {
-                DeleteAll(settlement.Children.First().Te);
-            }
-            Delete(te);
+            DeleteAll(settlement);
+            Delete(settlement.Te);
+            //Database.Settlements.Remove(settlement);
             Database.SaveChanges();
         }
 
+        private void DeleteAll(Settlement settlement)
+        {
+            var childrens = settlement.Children.ToList();
+            foreach (var child in childrens)
+            {
+                DeleteAll(child);
+                Delete(child.Te);
+                //Database.Settlements.Remove(child);
+                //Database.SaveChanges();
+            }
+            Database.SaveChanges();
+        }
         public void Clear()
         {
-            var parents = GetAll();
-            while(parents.Count() > 0)
-            {
-                DeleteAll(parents.First().Te);
-            }
+            Database.Database.ExecuteSqlCommand("TRUNCATE TABLE [Settlements]");
+            //Database.Settlements.RemoveRange(Database.Settlements);
+            //Database.SaveChanges();
         }
 
         public IEnumerable<Settlement> Find(Func<Settlement, bool> predicate)

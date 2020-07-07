@@ -10,8 +10,10 @@ namespace DirectorySettlementsDAL.Data
     /// </summary>
     public partial class ApplicationContext : DbContext
     {
-        public ApplicationContext()
+        private readonly string _connectionString;
+        public ApplicationContext(string connectionString) : base()
         {
+            _connectionString = connectionString;
         }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
@@ -29,8 +31,7 @@ namespace DirectorySettlementsDAL.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-//                optionsBuilder.UseSqlServer("Server=.\\SqlExpress;Database=directorySettlementsDb;Trusted_Connection=True;");
+                optionsBuilder.UseSqlServer(_connectionString);
             }
         }
 

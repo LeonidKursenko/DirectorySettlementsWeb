@@ -37,6 +37,12 @@ namespace DirectorySettlementsDAL.Interfaces
         void Create(T node);
 
         /// <summary>
+        /// Adds range of nodes.
+        /// </summary>
+        /// <param name="nodes">Range of nodes.</param>
+        public void AddRange(IEnumerable<T> nodes);
+
+        /// <summary>
         /// Updates a node in the database.
         /// </summary>
         /// <param name="node">Node that needs to be updated.</param>
