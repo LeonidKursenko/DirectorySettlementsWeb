@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DirectorySettlementsWebApi"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DirectorySettlementsDAL", "DirectorySettlementsDAL\DirectorySettlementsDAL.csproj", "{DA0D9B0B-9BAA-474D-B5B1-F3F61622FA07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectorySettlementsDALTests", "DirectorySettlementsDALTests\DirectorySettlementsDALTests.csproj", "{CF2C8B42-D374-4250-A728-E2E27252F773}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DirectorySettlementsDALTests", "DirectorySettlementsDALTests\DirectorySettlementsDALTests.csproj", "{CF2C8B42-D374-4250-A728-E2E27252F773}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectorySettlementsBLL", "DirectorySettlementsBLL\DirectorySettlementsBLL.csproj", "{4DB1C0E0-EA95-4A73-91B6-07ABC82A6DA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{CF2C8B42-D374-4250-A728-E2E27252F773}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CF2C8B42-D374-4250-A728-E2E27252F773}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CF2C8B42-D374-4250-A728-E2E27252F773}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DB1C0E0-EA95-4A73-91B6-07ABC82A6DA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DB1C0E0-EA95-4A73-91B6-07ABC82A6DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DB1C0E0-EA95-4A73-91B6-07ABC82A6DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DB1C0E0-EA95-4A73-91B6-07ABC82A6DA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
