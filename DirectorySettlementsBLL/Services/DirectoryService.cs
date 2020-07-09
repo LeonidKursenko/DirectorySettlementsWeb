@@ -111,8 +111,17 @@ namespace DirectorySettlementsBLL.Services
 
         public async Task<IEnumerable<SettlementDTO>> GetChildrenAsync(string parentTe)
         {
-            Settlement parentSettlement = await Manager.Settlements.GetAsync(parentTe);
-            IEnumerable<Settlement> settlements = parentSettlement.Children;
+            IEnumerable<Settlement> settlements;
+            if (parentTe == null)
+            {
+                settlements = await Manager.Settlements.GetAllAsync();
+                settlements = settlements.Where(s => s.ParentId == null);
+            }
+            else
+            {
+                Settlement parentSettlement = await Manager.Settlements.GetAsync(parentTe);
+                settlements = parentSettlement.Children;
+            }
             // Deletes all undirect childrens.
             foreach(var settlement in settlements)
             {

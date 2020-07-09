@@ -34,7 +34,7 @@ namespace DirectorySettlementsWebApi.Controllers
         public async Task<IEnumerable<SettlementDTO>> GetSettlements()
         {
             //return await _context.Settlements.ToListAsync();
-            return await _directoryService.GetAllAsync();
+            return await _directoryService.GetChildrenAsync(null);
         }
 
         // GET: api/Settlements/5

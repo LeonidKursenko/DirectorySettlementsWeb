@@ -28,8 +28,8 @@ namespace DirectorySettlementsBLL.DTO
         public string ParentId { get; set; }
 
         /// <value>Parent node.</value>
-        [JsonIgnore]
-        public virtual SettlementDTO Parent { get; set; }
+        //[JsonIgnore]
+        //public virtual SettlementDTO Parent { get; set; }
 
         /// <value>Contains a collection of child nodes.</value>
         public virtual ICollection<SettlementDTO> Children { get; set; }
