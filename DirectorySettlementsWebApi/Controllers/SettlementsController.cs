@@ -9,6 +9,8 @@ using DirectorySettlementsDAL.Data;
 using DirectorySettlementsDAL.Entities;
 using DirectorySettlementsDAL.Repositories;
 using DirectorySettlementsDAL.Interfaces;
+using DirectorySettlementsBLL.Interfaces;
+using DirectorySettlementsBLL.DTO;
 
 namespace DirectorySettlementsWebApi.Controllers
 {
@@ -17,20 +19,22 @@ namespace DirectorySettlementsWebApi.Controllers
     public class SettlementsController : ControllerBase
     {
         //private readonly ApplicationContext _context;
-        private readonly IUnitOfWork _manager;
+        //private readonly IUnitOfWork _manager;
+        private readonly IDirectoryService _directoryService;
 
-        public SettlementsController(IUnitOfWork unitOfWork)
+        public SettlementsController(IDirectoryService directoryService)
         {
             //_context = context;
-            _manager = unitOfWork;
+            //_manager = unitOfWork;
+            _directoryService = directoryService;
         }
 
         // GET: api/Settlements
         [HttpGet]
-        public async Task<IEnumerable<Settlement>> GetSettlements()
+        public async Task<IEnumerable<SettlementDTO>> GetSettlements()
         {
             //return await _context.Settlements.ToListAsync();
-            return await _manager.Settlements.GetAllAsync();
+            return await _directoryService.GetAllAsync();
         }
 
         // GET: api/Settlements/5

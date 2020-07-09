@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DirectorySettlementsBLL\DirectorySettlementsBLL.csproj" />
     <ProjectReference Include="..\DirectorySettlementsDAL\DirectorySettlementsDAL.csproj" />
   </ItemGroup>
 

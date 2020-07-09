@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Text.Json.Serialization;
 
-namespace DirectorySettlementsDAL.Entities
+namespace DirectorySettlementsBLL.DTO
 {
     /// <summary>
     /// Settlement class contains all information about settlement.
     /// </summary>
-    public partial class Settlement
-    {        
-        public Settlement()
+    public class SettlementDTO
+    {
+        public SettlementDTO()
         {
-            Children = new HashSet<Settlement>();
+            Children = new HashSet<SettlementDTO>();
         }
 
         /// <value>COATUU object code (код об`єкта КОАТУУ). It`s a unique id.</value>
@@ -26,9 +28,10 @@ namespace DirectorySettlementsDAL.Entities
         public string ParentId { get; set; }
 
         /// <value>Parent node.</value>
-        public virtual Settlement Parent { get; set; }
+        [JsonIgnore]
+        public virtual SettlementDTO Parent { get; set; }
 
         /// <value>Contains a collection of child nodes.</value>
-        public virtual ICollection<Settlement> Children { get; set; }
+        public virtual ICollection<SettlementDTO> Children { get; set; }
     }
 }

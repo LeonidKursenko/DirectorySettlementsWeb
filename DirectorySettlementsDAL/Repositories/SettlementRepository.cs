@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace DirectorySettlementsDAL.Repositories
 {
     /// <summary>
-    /// SettlementRepository class iImplements IRepository<Settlement> that manages Settlements table.
+    /// SettlementRepository class implements IRepository that manages Settlements table.
     /// </summary>
     public class SettlementRepository : IRepository<Settlement>
     {
@@ -233,8 +233,15 @@ namespace DirectorySettlementsDAL.Repositories
 
         public async Task UpdateAsync(Settlement node)
         {
-            Database.Entry(node).State = EntityState.Modified;
-            await Database.SaveChangesAsync();
+            try
+            {
+                Database.Entry(node).State = EntityState.Modified;
+                await Database.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                throw new UpdateOperationException($"Failed to update a node with TE= {node.Te}. " + ex.Message);
+            }
         }
 
         /// <summary>

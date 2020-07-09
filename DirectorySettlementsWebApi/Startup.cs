@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DirectorySettlementsBLL.Infrastructure;
 using DirectorySettlementsDAL.Data;
 using DirectorySettlementsDAL.Entities;
 using DirectorySettlementsDAL.Interfaces;
@@ -34,11 +35,12 @@ namespace DirectorySettlementsWebApi
         {
             Configuration.Bind("ConfigData", new Config());
 
-            services.AddTransient<IRepository<Settlement>, SettlementRepository>();
-            services.AddTransient<IUnitOfWork, EFUnitOfWork>();
+            //services.AddTransient<IRepository<Settlement>, SettlementRepository>();
+            //services.AddTransient<IUnitOfWork, EFUnitOfWork>();
 
-            services.AddDbContext<ApplicationContext>(x => x.UseSqlServer(Config.DbConnection));
-
+            //services.AddDbContext<ApplicationContext>(x => x.UseSqlServer(Config.DbConnection));
+            services.AddDal(Config.DbConnection);
+            services.AddBll();
             services.AddControllers();
         }
 
