@@ -63,7 +63,8 @@ namespace DirectorySettlementsBLL.Services
             }
             catch(Exception ex)
             {
-                throw ex;
+                //throw ex;
+                throw new Exception($"Failed to delete node with TE={te}." + ex.Message);
             }
         }
 

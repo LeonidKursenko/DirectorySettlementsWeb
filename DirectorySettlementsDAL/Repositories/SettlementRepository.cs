@@ -187,8 +187,18 @@ namespace DirectorySettlementsDAL.Repositories
                 throw new DeleteOperationException($"Failed to delete node with unknown Te='{te}'.");
             await DeleteAllAsync(settlement);
             await DeleteAsync(settlement.Te);
-            //Database.Settlements.Remove(settlement);
-            await Database.SaveChangesAsync();
+            await SaveAsync(te);
+        }
+        private async Task SaveAsync(string te)
+        {
+            try
+            {
+                await Database.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                throw new DeleteOperationException($"Failed to delete node Te='{te}'. " + ex.Message);
+            }
         }
 
         private async Task DeleteAllAsync(Settlement settlement)
@@ -198,10 +208,8 @@ namespace DirectorySettlementsDAL.Repositories
             {
                 await DeleteAllAsync(child);
                 await DeleteAsync(child.Te);
-                //Database.Settlements.Remove(child);
-                //Database.SaveChanges();
             }
-            await Database.SaveChangesAsync();
+            await SaveAsync(settlement.Te);
         }
         public async Task ClearAsync()
         {
