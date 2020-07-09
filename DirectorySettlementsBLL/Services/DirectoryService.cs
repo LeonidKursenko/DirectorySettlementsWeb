@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DirectorySettlementsBLL.BusinessModels;
 using DirectorySettlementsBLL.DTO;
+using DirectorySettlementsBLL.Exceptions;
 using DirectorySettlementsBLL.Interfaces;
 using DirectorySettlementsDAL.Entities;
 using DirectorySettlementsDAL.Interfaces;
@@ -43,7 +44,7 @@ namespace DirectorySettlementsBLL.Services
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw new ValidationException($"Failed to create a settlement with TE={node.Te}", node.Te);
             }
         }
 
@@ -63,8 +64,7 @@ namespace DirectorySettlementsBLL.Services
             }
             catch(Exception ex)
             {
-                //throw ex;
-                throw new Exception($"Failed to delete node with TE={te}." + ex.Message);
+                throw new ValidationException($"Failed to delete node with TE={te}." + ex.Message, te);
             }
         }
 
@@ -133,7 +133,7 @@ namespace DirectorySettlementsBLL.Services
             }
             catch(Exception ex)
             {
-                throw ex;
+                throw new ValidationException($"Failed to delete node with TE={node.Te}." + ex.Message, node.Te);
             }
         }
 
