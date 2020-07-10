@@ -70,14 +70,12 @@ namespace DirectorySettlementsBLL.Services
 
         public async Task<IEnumerable<SettlementDTO>> FilterAsync(IFilterOptions filterOptions)
         {
-            return await Task.Run(() =>
-            {
-                IEnumerable<Settlement> settlements = Manager.Settlements.Find(s => s.ParentId == null);
-                IEnumerable<SettlementDTO> settlementDTOs = _mapper.Map<IEnumerable<Settlement>, List<SettlementDTO>>(settlements);
-                if (settlementDTOs.Any() == false) return settlementDTOs;
-                Filter(settlementDTOs, filterOptions);
-                return settlementDTOs;
-            });
+            IEnumerable<Settlement> settlements = await Manager.Settlements.GetAllAsync();
+            settlements = settlements.Where(s => s.ParentId == null);
+            IEnumerable<SettlementDTO> settlementDTOs = _mapper.Map<IEnumerable<Settlement>, List<SettlementDTO>>(settlements);
+            if (settlementDTOs.Any() == false) return settlementDTOs;
+            Filter(settlementDTOs, filterOptions);
+            return settlementDTOs;
         }
 
         private void Filter(IEnumerable<SettlementDTO> settlementDTOs, IFilterOptions filterOptions)
@@ -123,11 +121,16 @@ namespace DirectorySettlementsBLL.Services
                 settlements = parentSettlement.Children;
             }
             // Deletes all undirect childrens.
-            foreach(var settlement in settlements)
-            {
-                settlement.Children.Clear();
-            }
+            //foreach(var settlement in settlements)
+            //{
+            //    settlement.Children.Clear();
+            //}
             IEnumerable<SettlementDTO> settlementDTOs = _mapper.Map<IEnumerable<Settlement>, List<SettlementDTO>>(settlements);
+            //foreach (var settlementDTO in settlementDTOs)
+            //{
+            //    settlementDTO.HasChildrenNode = settlementDTO.Children.Any();
+            //    settlementDTO.Children.Clear();
+            //}
             return settlementDTOs;
         }
 
@@ -142,7 +145,7 @@ namespace DirectorySettlementsBLL.Services
             }
             catch(Exception ex)
             {
-                throw new ValidationException($"Failed to delete node with TE={node.Te}." + ex.Message, node.Te);
+                throw new ValidationException($"Failed to update node with TE={node.Te}." + ex.Message, node.Te);
             }
         }
 

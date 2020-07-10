@@ -15,8 +15,11 @@ namespace DirectorySettlementsBLL.BusinessModels
         {
             if (string.IsNullOrWhiteSpace(filterOptions.Name) != true &&
                 settlementDTO.Nu.Contains(filterOptions.Name) == false) return false;
-            if (string.IsNullOrWhiteSpace(filterOptions.SettlementType) != true &&
-                filterOptions.SettlementType.Equals(settlementDTO.Np) == false) return false;
+            if (string.IsNullOrWhiteSpace(filterOptions.SettlementType) != true)
+            {
+                if(string.IsNullOrWhiteSpace(settlementDTO.Np) == true) return false;
+                if (settlementDTO.Np.Contains(filterOptions.SettlementType) == false) return false;
+            }
             return true;
         }
     }

@@ -1,0 +1,37 @@
+﻿.settlement-tree {
+  /* Remove default bullets */
+  /* Remove margins and padding from the parent ul */
+  /* Style the caret/arrow */
+  /* Create the caret/arrow with a unicode, and style it */
+  /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+  /* Hide the nested list */
+  /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+}
+.settlement-tree ul,
+.settlement-tree .settlement-tree-root {
+  list-style-type: none;
+}
+.settlement-tree .settlement-tree-root {
+  margin: 0;
+  padding: 0;
+}
+.settlement-tree .caret {
+  cursor: pointer;
+  user-select: none;
+  /* Prevent text selection */
+}
+.settlement-tree .caret::before {
+  content: "\25B6";
+  color: black;
+  display: inline-block;
+  margin-right: 6px;
+}
+.settlement-tree .caret-down::before {
+  transform: rotate(90deg);
+}
+.settlement-tree .nested {
+  display: none;
+}
+.settlement-tree .active {
+  display: block;
+}

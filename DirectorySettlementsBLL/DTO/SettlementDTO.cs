@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -33,5 +34,7 @@ namespace DirectorySettlementsBLL.DTO
 
         /// <value>Contains a collection of child nodes.</value>
         public virtual ICollection<SettlementDTO> Children { get; set; }
+
+        public bool HasChildrenNode { get; set; }
     }
 }

@@ -35,7 +35,7 @@ namespace DirectorySettlementsBLL.Services.Tests
             //mock.Setup(manager => manager.Settlements.GetAllAsync().GetAwaiter().GetResult())
             //    .Returns(TestData.EmitData());
             _directoryService = new DirectoryService(_manager);
-            
+
         }
         [Theory]
         [InlineData(null, null)]
@@ -63,7 +63,7 @@ namespace DirectorySettlementsBLL.Services.Tests
         public void GetAllAsyncTest()
         {
             // Act
-            var results  = _directoryService.GetAllAsync().GetAwaiter().GetResult();
+            var results = _directoryService.GetAllAsync().GetAwaiter().GetResult();
             // Assert
             Assert.NotNull(results);
             Assert.NotEmpty(results);

@@ -226,12 +226,15 @@ namespace DirectorySettlementsDAL.Repositories
 
         public IEnumerable<Settlement> Find(Func<Settlement, bool> predicate)
         {
-            return Database.Settlements.Where(predicate);
+            return Database.Settlements.Include(s => s.Children).Where(predicate);
         }
 
         public async Task<Settlement> GetAsync(string te)
         {
-            return await Database.Settlements.FindAsync(te);
+            var settlement = await Database.Settlements.FindAsync(te);
+            if (settlement == null) return null;
+            Database.Entry(settlement).Collection(s => s.Children).Load();
+            return settlement;
         }
 
         public async Task<IEnumerable<Settlement>> GetAllAsync()

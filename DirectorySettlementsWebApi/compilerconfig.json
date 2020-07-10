@@ -1,0 +1,10 @@
+﻿[
+  {
+    "outputFile": "wwwroot/css/site-from-less.css",
+    "inputFile": "wwwroot/less/site.less"
+  },
+  {
+    "outputFile": "wwwroot/css/settlement-tree.css",
+    "inputFile": "wwwroot/less/settlement-tree.less"
+  }
+]
