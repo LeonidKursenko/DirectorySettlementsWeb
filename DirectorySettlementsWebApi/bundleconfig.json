@@ -3,6 +3,7 @@
     "outputFileName": "wwwroot/css/main.css",
     "inputFiles": [
       "wwwroot/lib/bootstrap/dist/css/bootstrap.min.css",
+      "wwwroot/lib/bootstrap/dist/css/font-glyphicons.css",
       "wwwroot/css/settlement-tree.css",
       "wwwroot/css/site.css",
       "wwwroot/css/site-from-less.css"
@@ -14,6 +15,7 @@
       "wwwroot/lib/jquery/dist/jquery.js",
       "wwwroot/lib/bootstrap/dist/js/bootstrap.bundle.js",
       "wwwroot/js/settlement-tree.js",
+      "wwwroot/js/settlement-api.js",
       "wwwroot/js/site.js"
     ]
   }

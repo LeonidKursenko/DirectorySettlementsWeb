@@ -17378,93 +17378,164 @@ return jQuery;
 //# sourceMappingURL=bootstrap.bundle.js.map
 
 
-// Builds tree of the settlement.
-function buildTree(selector, nodes = []) {
-    let tree = document.querySelector(selector);
-    if (tree == null || tree == undefined) {
-        console.log('selector fails.');
-        return;
+// Settlements tree.
+function SettlementsTree(actionsObject) {
+    let treeNodes;
+    // Builds tree of the settlement.
+    this.buildTree = function(selector, nodes = []) {
+        let tree = document.querySelector(selector);
+        if (tree == null || tree == undefined)
+            throw new Error('selector fails.');
+        if (nodes.length == 0) throw new Error("empty");
+        // clear tree.
+        tree.innerHTML = "";
+        // Main list of the nodes.
+        let ul = document.createElement("ul");
+        ul.classList.add("settlement-tree-root");
+        tree.appendChild(ul);
+        buildList(nodes, ul);
     }
-    if (nodes.length == 0) {
-        console.log("empty");
-        return;
-    }
-    // Main list of the nodes.
-    let ul = document.createElement("ul");
-    ul.classList.add("settlement-tree-root");
-    tree.appendChild(ul);
-    buildList(nodes, ul);
-}
 
-// Builds list of the node from one level.
-function buildList(nodes, ul) {
-    for (let node of nodes) {
-        let li = document.createElement("li");
-        ul.appendChild(li);
-        buildNode(node, li);
+    // Builds list of the node from one level.
+    function buildList(nodes, ul) {
+        treeNodes = nodes;
+        for (let node of nodes) {
+            let li = document.createElement("li");
+            ul.appendChild(li);
+            buildNode(node, li);
+        }
     }
-}
 
-// Builds settlement node.
-function buildNode(node, li) {
-    if (node.nodes.length == 0) {
-        //li.textContent = node.text;
-        buildNodeTitle(node, li);
+    // Builds settlement node.
+    function buildNode(node, li) {
+        if (node.nodes.length == 0) {
+            //li.textContent = node.text;
+            buildNodeTitle(node, li);
+        }
+        else {
+            buildNodeWithChildren(node, li);
+        }
     }
-    else {
+
+    // Builds node Title
+    function buildNodeTitle(node, li) {
+        let titleSpan = document.createElement("span");
+        titleSpan.textContent = node.text;
+        li.appendChild(titleSpan);
+
+        let menuPanelSpan = document.createElement("span");
+        menuPanelSpan.classList.add("menu-panel-span");
+        li.appendChild(menuPanelSpan);
+
+        addButton(menuPanelSpan, ["glyphicon", "glyphicon-plus"], onAddNode);
+        addButton(menuPanelSpan, ["glyphicon", "glyphicon-pencil"], onEditNode);
+        addButton(menuPanelSpan, ["glyphicon", "glyphicon-remove"], onDeleteNode);
+
+        function onAddNode(event) {
+            node.li = li;
+            actionsObject.addNode(node);
+        }
+
+        function onEditNode(event) {
+            node.li = li;
+            actionsObject.editNode(node);
+        }
+
+        function onDeleteNode(event) {
+            node.li = li;
+            actionsObject.deleteNode(node);
+        }
+    }
+
+    // Adds node to the tree.
+    this.addNode = function (node, li) {
+        li.innerHTML = "";
         buildNodeWithChildren(node, li);
     }
-}
 
-// Builds node Title
-function buildNodeTitle(node, li) {
-    let titleSpan = document.createElement("span");
-    titleSpan.textContent = node.text;
-    li.appendChild(titleSpan);
-}
-
-// Builds node which has children nodes.
-function buildNodeWithChildren(node, li) {
-    let span = document.createElement("span");
-    span.classList.add("caret");
-    //span.textContent = node.text;
-    li.appendChild(span);
-
-    buildNodeTitle(node, li);
-
-    let ul = document.createElement("ul");
-    ul.classList.add("nested");
-    li.appendChild(ul);
-
-    span.addEventListener("click", expanderClick);
-
-    // Opens children nodes.
-    function expanderClick(event) {
-        console.log('click expander');
-        // Build children nodes if they opens at first time.
-        if (ul.innerHTML == "")
-            buildList(node.nodes, ul);
-        // Show or hide children nodes.
-        this.parentElement.querySelector(".nested").classList.toggle("active");
-        this.classList.toggle("caret-down");
-        event.stopPropagation();
+    // Edits node in the tree.
+    this.editNode = function (node, li) {
+        li.innerHTML = "";
+        buildNode(node, li);
     }
-}
-// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
 
-// Write your JavaScript code.
-const treeId = "#tree";
-let tree = [];
+    // Deletes node from the tree.
+    this.deleteNode = function (node, li) {
+        li.innerHTML = "";
+        let parentUl = li.parentElement;
+        parentUl.removeChild(li);
+        console.log(node.te);
+        let isRemoved = removeNode(node, treeNodes);
+        console.log(isRemoved);
+        let childNodes = parentUl.querySelectorAll("li");
+        if (childNodes.length == 0) {
+            let parentLiUl = parentUl.parentElement;
+            parentLiUl.removeChild(parentUl);
+            let caret = parentLiUl.querySelector("span.caret");
+            parentLiUl.removeChild(caret);
+        }
+        //buildNode(node, li);
+    }
 
-$(async function () {
+    function removeNode(removedNode, nodes) {
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].te == removedNode.te) {
+                nodes.splice(i, 1);
+                return true;
+            }
+            else {
+                let isDeleted = removeNode(removedNode, nodes[i].nodes);
+                if (isDeleted == true) return true;
+            }
+        }
+        return false;
+    }
+
+    // Adds button to panel.
+    function addButton(menuPanelSpan, cssClasses, onClickHandler) {
+        let buttonSpan = document.createElement("span");
+        for (let cssClass of cssClasses)
+            buttonSpan.classList.add(cssClass);
+        menuPanelSpan.appendChild(buttonSpan);
+        buttonSpan.addEventListener("click", onClickHandler);
+    }
+
+    // Builds node which has children nodes.
+    function buildNodeWithChildren(node, li) {
+        let span = document.createElement("span");
+        span.classList.add("caret");
+        //span.textContent = node.text;
+        li.appendChild(span);
+
+        buildNodeTitle(node, li);
+
+        let ul = document.createElement("ul");
+        ul.classList.add("nested");
+        li.appendChild(ul);
+
+        span.addEventListener("click", expanderClick);
+
+        // Opens children nodes.
+        function expanderClick(event) {
+            console.log('click expander');
+            // Build children nodes if they opens at first time.
+            if (ul.innerHTML == "")
+                buildList(node.nodes, ul);
+            // Show or hide children nodes.
+            this.parentElement.querySelector(".nested").classList.toggle("active");
+            this.classList.toggle("caret-down");
+            event.stopPropagation();
+        }
+    }
+
     
-    tree = await getRootSettlements();
-    buildTree(treeId, tree);
-});
+}
+
+
+
 
 // Gets root settlements.
-async function getRootSettlements() {
+async function httpGetRootSettlements() {
     const response = await fetch("/api/settlements", {
         method: "GET",
         headers: { "Accept": "application/json" }
@@ -17474,7 +17545,6 @@ async function getRootSettlements() {
         let nodes = getNodes(settlements);
         return nodes;
         //console.log(nodes);
-        //createTree(nodes);
     }
 }
 
@@ -17483,13 +17553,216 @@ function getNodes(settlements) {
     let nodes = [];
     // Mapping data.
     settlements.forEach(settlement => {
-        let node = {};
-        node.te = settlement.te;
-        node.name = settlement.nu;
-        node.text = `${node.name} [${node.te}]`;
-        if (settlement.children)
-            node.nodes = getNodes(settlement.children);
+        //let node = {};
+        //node.te = settlement.te;
+        //node.name = settlement.nu;
+        //node.text = `${node.name} [${node.te}]`;
+        //if (settlement.children)
+        //    node.nodes = getNodes(settlement.children);
+        //nodes.push(node);
+        let node = getNode(settlement);
         nodes.push(node);
     });
     return nodes;
+}
+
+// Converts Settlement to node.
+function getNode(settlement) {
+    // Mapping data.
+    let node = {};
+    node.te = settlement.te;
+    node.nu = settlement.nu;
+    node.text = `${node.nu} [${node.te}]`;
+    if (settlement.children)
+        node.nodes = getNodes(settlement.children);
+    return node;
+}
+
+// Gets filtered settlements.
+async function httpfilterNodes(searchedName, searchedType) {
+    const response = await fetch(`api/settlements/filter?name=${searchedName}&type=${searchedType}`, {
+        method: "GET",
+        headers: { "Accept": "application/json" }
+    });
+    if (response.ok === true) {
+        const settlements = await response.json();
+        let nodes = getNodes(settlements);
+        return nodes;
+        //buildTree(treeId, nodes);
+    }
+}
+
+// Creates a new node.
+async function httpCreateNode(node) {
+    console.log("Node is created");
+    const response = await fetch("api/settlements", {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({
+            te: node.te,
+            nu: node.nu,
+            np: node.np
+        })
+    });
+    if (response.ok === true) {
+        const settlement = await response.json();
+        return getNode(settlement);
+    }
+}
+
+// Updates a node.
+async function httpUpdateNode(node) {
+    console.log("Node is updated");
+    const response = await fetch("api/settlements/" + node.te, {
+        method: "PUT",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({
+            te: node.te,
+            nu: node.nu,
+            np: node.np
+        })
+    });
+    if (response.ok === true) {
+        const settlement = await response.json();
+        return getNode(settlement);
+    }
+}
+
+// Delete a node.
+async function httpDeleteNode(node, isCascade) {
+    const response = await fetch(`api/settlements/delete?te=${node.te}&cascade=${isCascade}`, {
+        method: "DELETE",
+        headers: { "Accept": "application/json" }
+    });
+    if (response.ok === true) {
+        const settlement = await response.json();
+        return getNode(settlement);
+    }
+}
+
+// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+// for details on configuring this project to bundle and minify static web assets.
+
+// Write your JavaScript code.
+// Id of the tree div tag.
+const treeId = "#tree";
+
+let tree;
+let selectedNodes = new Array();
+let settlementsTree;
+
+// Main function.
+$(async function () {
+    
+    tree = await httpGetRootSettlements();
+    settlementsTree = new SettlementsTree({
+        addNode: createNodeModal,
+        editNode: editNodeModal,
+        deleteNode: deleteNodeModal
+    });
+    settlementsTree.buildTree(treeId, tree);
+    addFilter();
+    createNode();
+    updateNode();
+    deleteNode();
+});
+
+// Adds filter.
+function addFilter() {
+    document.forms["filterForm"].addEventListener("submit", async e => {
+        e.preventDefault();
+        const form = document.forms["filterForm"];
+        const name = form.elements["name"].value;
+        const type = form.elements["type"].value;
+        tree = await httpfilterNodes(name, type);
+        settlementsTree.buildTree(treeId, tree);
+    });
+}
+
+const createModalId = "#createModal";
+const createFormName = "createForm";
+// Opens create modal.
+function createNodeModal(node) {
+    $(createModalId).modal();
+    const form = document.forms[createFormName];
+    form.elements["te"].value = node.te;
+    form.elements["name"].value = "";
+    form.elements["type"].value = "";
+    form.settlementParent = node;
+}
+
+// Creates a new node.
+function createNode() {
+    document.forms[createFormName].addEventListener("submit", async e => {
+        e.preventDefault();
+        const form = document.forms[createFormName];
+        let node = {};
+        node.te = form.elements["te"].value;
+        node.nu = form.elements["name"].value;
+        node.np = form.elements["type"].value;
+        let createdNode = await httpCreateNode(node);
+        let parent = form.settlementParent;
+        parent.nodes.push(createdNode);
+
+        $(createModalId).modal("toggle");
+        //settlementsTree.buildTree(treeId, tree);
+        settlementsTree.addNode(parent, parent.li);
+    });
+}
+
+const editModalId = "#editModal";
+const editFormName = "editForm";
+// Opens edit modal.
+function editNodeModal(node) {
+    console.log(node.nu);
+    $(editModalId).modal();
+    const form = document.forms[editFormName];
+    form.elements["name"].value = node.nu;
+    form.elements["type"].value = node.np;
+    form.settlement = node;
+}
+
+// Updates a node.
+function updateNode() {
+    document.forms[editFormName].addEventListener("submit", async e => {
+        e.preventDefault();
+        const form = document.forms[editFormName];
+        let node = form.settlement;
+        node.nu = form.elements["name"].value;
+        node.np = form.elements["type"].value;
+        let updatedNode = await httpUpdateNode(node);
+        node.nu = updatedNode.nu;
+        node.np = updatedNode.np;
+        node.text = updatedNode.text;
+
+        $(editModalId).modal("toggle");
+        settlementsTree.editNode(node, node.li);
+    });
+}
+
+const deleteModalId = "#deleteModal";
+const deleteFormName = "deleteForm";
+// Opens delete modal.
+function deleteNodeModal(node) {
+    $(deleteModalId).modal();
+    const form = document.forms[deleteFormName];
+    form.elements["cascadeDelete"].checked = false;
+    form.settlement = node;
+}
+
+// Delete a node.
+function deleteNode() {
+    console.log("Node is deleted");
+    document.forms[deleteFormName].addEventListener("submit", async e => {
+        e.preventDefault();
+        const form = document.forms[deleteFormName];
+        let node = form.settlement;
+        let isCascade = form.elements["cascadeDelete"].checked;
+        console.log(isCascade);
+        let deletedNode = await httpDeleteNode(node, isCascade);
+
+        $(deleteModalId).modal("toggle");
+        settlementsTree.deleteNode(node, node.li);
+        //settlementsTree.buildTree(treeId, tree);
+    });
 }

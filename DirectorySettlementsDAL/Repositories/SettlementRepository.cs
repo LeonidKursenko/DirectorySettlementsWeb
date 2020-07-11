@@ -203,7 +203,8 @@ namespace DirectorySettlementsDAL.Repositories
 
         private async Task DeleteAllAsync(Settlement settlement)
         {
-            var childrens = settlement.Children.ToList();
+            var node = await GetAsync(settlement.Te);
+            var childrens = node.Children.ToList();
             foreach (var child in childrens)
             {
                 await DeleteAllAsync(child);

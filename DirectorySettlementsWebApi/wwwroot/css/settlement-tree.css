@@ -35,3 +35,11 @@
 .settlement-tree .active {
   display: block;
 }
+.settlement-tree .glyphicon:hover {
+  color: red;
+  font-size: 1.2em;
+}
+.settlement-tree .glyphicon:active {
+  color: orange;
+  font-size: 1.5em;
+}

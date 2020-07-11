@@ -2,44 +2,125 @@
 // for details on configuring this project to bundle and minify static web assets.
 
 // Write your JavaScript code.
+// Id of the tree div tag.
 const treeId = "#tree";
-let selectedNodes = new Array();
-let expandedNodes = [];
-let tree = [];
 
+let tree;
+let selectedNodes = new Array();
+let settlementsTree;
+
+// Main function.
 $(async function () {
     
-    tree = await getRootSettlements();
-    buildTree(treeId, tree);
+    tree = await httpGetRootSettlements();
+    settlementsTree = new SettlementsTree({
+        addNode: createNodeModal,
+        editNode: editNodeModal,
+        deleteNode: deleteNodeModal
+    });
+    settlementsTree.buildTree(treeId, tree);
+    addFilter();
+    createNode();
+    updateNode();
+    deleteNode();
 });
 
-// Gets root settlements.
-async function getRootSettlements() {
-    const response = await fetch("/api/settlements", {
-        method: "GET",
-        headers: { "Accept": "application/json" }
+// Adds filter.
+function addFilter() {
+    document.forms["filterForm"].addEventListener("submit", async e => {
+        e.preventDefault();
+        const form = document.forms["filterForm"];
+        const name = form.elements["name"].value;
+        const type = form.elements["type"].value;
+        tree = await httpfilterNodes(name, type);
+        settlementsTree.buildTree(treeId, tree);
     });
-    if (response.ok === true) {
-        const settlements = await response.json();
-        let nodes = getNodes(settlements);
-        return nodes;
-        //console.log(nodes);
-        //createTree(nodes);
-    }
 }
 
-// Converts Settlements to nodes.
-function getNodes(settlements) {
-    let nodes = [];
-    // Mapping data.
-    settlements.forEach(settlement => {
+const createModalId = "#createModal";
+const createFormName = "createForm";
+// Opens create modal.
+function createNodeModal(node) {
+    $(createModalId).modal();
+    const form = document.forms[createFormName];
+    form.elements["te"].value = node.te;
+    form.elements["name"].value = "";
+    form.elements["type"].value = "";
+    form.settlementParent = node;
+}
+
+// Creates a new node.
+function createNode() {
+    document.forms[createFormName].addEventListener("submit", async e => {
+        e.preventDefault();
+        const form = document.forms[createFormName];
         let node = {};
-        node.te = settlement.te;
-        node.name = settlement.nu;
-        node.text = `${node.name} [${node.te}]`;
-        if (settlement.children)
-            node.nodes = getNodes(settlement.children);
-        nodes.push(node);
+        node.te = form.elements["te"].value;
+        node.nu = form.elements["name"].value;
+        node.np = form.elements["type"].value;
+        let createdNode = await httpCreateNode(node);
+        let parent = form.settlementParent;
+        parent.nodes.push(createdNode);
+
+        $(createModalId).modal("toggle");
+        //settlementsTree.buildTree(treeId, tree);
+        settlementsTree.addNode(parent, parent.li);
     });
-    return nodes;
+}
+
+const editModalId = "#editModal";
+const editFormName = "editForm";
+// Opens edit modal.
+function editNodeModal(node) {
+    console.log(node.nu);
+    $(editModalId).modal();
+    const form = document.forms[editFormName];
+    form.elements["name"].value = node.nu;
+    form.elements["type"].value = node.np;
+    form.settlement = node;
+}
+
+// Updates a node.
+function updateNode() {
+    document.forms[editFormName].addEventListener("submit", async e => {
+        e.preventDefault();
+        const form = document.forms[editFormName];
+        let node = form.settlement;
+        node.nu = form.elements["name"].value;
+        node.np = form.elements["type"].value;
+        let updatedNode = await httpUpdateNode(node);
+        node.nu = updatedNode.nu;
+        node.np = updatedNode.np;
+        node.text = updatedNode.text;
+
+        $(editModalId).modal("toggle");
+        settlementsTree.editNode(node, node.li);
+    });
+}
+
+const deleteModalId = "#deleteModal";
+const deleteFormName = "deleteForm";
+// Opens delete modal.
+function deleteNodeModal(node) {
+    $(deleteModalId).modal();
+    const form = document.forms[deleteFormName];
+    form.elements["cascadeDelete"].checked = false;
+    form.settlement = node;
+}
+
+// Delete a node.
+function deleteNode() {
+    console.log("Node is deleted");
+    document.forms[deleteFormName].addEventListener("submit", async e => {
+        e.preventDefault();
+        const form = document.forms[deleteFormName];
+        let node = form.settlement;
+        let isCascade = form.elements["cascadeDelete"].checked;
+        console.log(isCascade);
+        let deletedNode = await httpDeleteNode(node, isCascade);
+
+        $(deleteModalId).modal("toggle");
+        settlementsTree.deleteNode(node, node.li);
+        //settlementsTree.buildTree(treeId, tree);
+    });
 }
