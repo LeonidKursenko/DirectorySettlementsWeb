@@ -68,49 +68,7 @@ function SettlementsTree(actionsObject) {
         }
     }
 
-    // Adds node to the tree.
-    this.addNode = function (node, li) {
-        li.innerHTML = "";
-        buildNodeWithChildren(node, li);
-    }
-
-    // Edits node in the tree.
-    this.editNode = function (node, li) {
-        li.innerHTML = "";
-        buildNode(node, li);
-    }
-
-    // Deletes node from the tree.
-    this.deleteNode = function (node, li) {
-        li.innerHTML = "";
-        let parentUl = li.parentElement;
-        parentUl.removeChild(li);
-        console.log(node.te);
-        let isRemoved = removeNode(node, treeNodes);
-        console.log(isRemoved);
-        let childNodes = parentUl.querySelectorAll("li");
-        if (childNodes.length == 0) {
-            let parentLiUl = parentUl.parentElement;
-            parentLiUl.removeChild(parentUl);
-            let caret = parentLiUl.querySelector("span.caret");
-            parentLiUl.removeChild(caret);
-        }
-        //buildNode(node, li);
-    }
-
-    function removeNode(removedNode, nodes) {
-        for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].te == removedNode.te) {
-                nodes.splice(i, 1);
-                return true;
-            }
-            else {
-                let isDeleted = removeNode(removedNode, nodes[i].nodes);
-                if (isDeleted == true) return true;
-            }
-        }
-        return false;
-    }
+    
 
     // Adds button to panel.
     function addButton(menuPanelSpan, cssClasses, onClickHandler) {
@@ -149,7 +107,49 @@ function SettlementsTree(actionsObject) {
         }
     }
 
-    
+    // Adds node to the tree.
+    this.addNode = function (node, li) {
+        li.innerHTML = "";
+        buildNodeWithChildren(node, li);
+    }
+
+    // Edits node in the tree.
+    this.editNode = function (node, li) {
+        li.innerHTML = "";
+        buildNode(node, li);
+    }
+
+    // Deletes node from the tree.
+    this.deleteNode = function (node, li) {
+        li.innerHTML = "";
+        let parentUl = li.parentElement;
+        parentUl.removeChild(li);
+        console.log(node.te);
+        let isRemoved = removeNode(node, treeNodes);
+        console.log(isRemoved);
+        let childNodes = parentUl.querySelectorAll("li");
+        if (childNodes.length == 0) {
+            let parentLiUl = parentUl.parentElement;
+            parentLiUl.removeChild(parentUl);
+            let caret = parentLiUl.querySelector("span.caret");
+            parentLiUl.removeChild(caret);
+        }
+    }
+
+    // Removes node from the tree.
+    function removeNode(removedNode, nodes) {
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].te == removedNode.te) {
+                nodes.splice(i, 1);
+                return true;
+            }
+            else {
+                let isDeleted = removeNode(removedNode, nodes[i].nodes);
+                if (isDeleted == true) return true;
+            }
+        }
+        return false;
+    }
 }
 
 

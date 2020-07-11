@@ -8,7 +8,6 @@ async function httpGetRootSettlements() {
         const settlements = await response.json();
         let nodes = getNodes(settlements);
         return nodes;
-        //console.log(nodes);
     }
 }
 
@@ -17,13 +16,6 @@ function getNodes(settlements) {
     let nodes = [];
     // Mapping data.
     settlements.forEach(settlement => {
-        //let node = {};
-        //node.te = settlement.te;
-        //node.name = settlement.nu;
-        //node.text = `${node.name} [${node.te}]`;
-        //if (settlement.children)
-        //    node.nodes = getNodes(settlement.children);
-        //nodes.push(node);
         let node = getNode(settlement);
         nodes.push(node);
     });
@@ -52,7 +44,6 @@ async function httpfilterNodes(searchedName, searchedType) {
         const settlements = await response.json();
         let nodes = getNodes(settlements);
         return nodes;
-        //buildTree(treeId, nodes);
     }
 }
 
@@ -102,4 +93,10 @@ async function httpDeleteNode(node, isCascade) {
         const settlement = await response.json();
         return getNode(settlement);
     }
+}
+
+
+// Gets filtered settlements.
+async function httpExportNodes(searchedName, searchedType) {    
+    window.open(`api/settlements/export?name=${searchedName}&type=${searchedType}`);
 }

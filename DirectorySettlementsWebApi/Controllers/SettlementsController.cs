@@ -23,11 +23,13 @@ namespace DirectorySettlementsWebApi.Controllers
     public class SettlementsController : ControllerBase
     {
         private readonly IDirectoryService _directoryService;
+        private readonly IExportService _exportService;
         private readonly IMapper _mapper;
 
-        public SettlementsController(IDirectoryService directoryService)
+        public SettlementsController(IDirectoryService directoryService, IExportService exportService)
         {
             _directoryService = directoryService;
+            _exportService = exportService;
             _mapper = new MapperConfiguration(cfg => cfg.CreateMap<SettlementDTO, Node>()).CreateMapper();
         }
 
@@ -173,6 +175,28 @@ namespace DirectorySettlementsWebApi.Controllers
         {
             var settlement = await _directoryService.GetAsync(te);
             return settlement != null;
+        }
+
+        // Get: api/settlements/export?name=КИЇВ&type=Р
+        [HttpGet]
+        [Route("export")]
+        public async Task<IActionResult> GetExportSettlements(string name = null, string type = null)
+        {
+            var options = new FilterOptions
+            {
+                Name = name,
+                SettlementType = type
+            };
+            var settlementDTOs = await _directoryService.FilterAsync(options);
+            if (settlementDTOs == null || settlementDTOs.Any() == false)
+            {
+                return NotFound();
+            }
+
+            byte[] mas = _exportService.Export(settlementDTOs);
+            string file_type = "application/pdf";
+            string file_name = "document.pdf";
+            return File(mas, file_type, file_name);
         }
     }
 }

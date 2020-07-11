@@ -17447,49 +17447,7 @@ function SettlementsTree(actionsObject) {
         }
     }
 
-    // Adds node to the tree.
-    this.addNode = function (node, li) {
-        li.innerHTML = "";
-        buildNodeWithChildren(node, li);
-    }
-
-    // Edits node in the tree.
-    this.editNode = function (node, li) {
-        li.innerHTML = "";
-        buildNode(node, li);
-    }
-
-    // Deletes node from the tree.
-    this.deleteNode = function (node, li) {
-        li.innerHTML = "";
-        let parentUl = li.parentElement;
-        parentUl.removeChild(li);
-        console.log(node.te);
-        let isRemoved = removeNode(node, treeNodes);
-        console.log(isRemoved);
-        let childNodes = parentUl.querySelectorAll("li");
-        if (childNodes.length == 0) {
-            let parentLiUl = parentUl.parentElement;
-            parentLiUl.removeChild(parentUl);
-            let caret = parentLiUl.querySelector("span.caret");
-            parentLiUl.removeChild(caret);
-        }
-        //buildNode(node, li);
-    }
-
-    function removeNode(removedNode, nodes) {
-        for (let i = 0; i < nodes.length; i++) {
-            if (nodes[i].te == removedNode.te) {
-                nodes.splice(i, 1);
-                return true;
-            }
-            else {
-                let isDeleted = removeNode(removedNode, nodes[i].nodes);
-                if (isDeleted == true) return true;
-            }
-        }
-        return false;
-    }
+    
 
     // Adds button to panel.
     function addButton(menuPanelSpan, cssClasses, onClickHandler) {
@@ -17528,7 +17486,49 @@ function SettlementsTree(actionsObject) {
         }
     }
 
-    
+    // Adds node to the tree.
+    this.addNode = function (node, li) {
+        li.innerHTML = "";
+        buildNodeWithChildren(node, li);
+    }
+
+    // Edits node in the tree.
+    this.editNode = function (node, li) {
+        li.innerHTML = "";
+        buildNode(node, li);
+    }
+
+    // Deletes node from the tree.
+    this.deleteNode = function (node, li) {
+        li.innerHTML = "";
+        let parentUl = li.parentElement;
+        parentUl.removeChild(li);
+        console.log(node.te);
+        let isRemoved = removeNode(node, treeNodes);
+        console.log(isRemoved);
+        let childNodes = parentUl.querySelectorAll("li");
+        if (childNodes.length == 0) {
+            let parentLiUl = parentUl.parentElement;
+            parentLiUl.removeChild(parentUl);
+            let caret = parentLiUl.querySelector("span.caret");
+            parentLiUl.removeChild(caret);
+        }
+    }
+
+    // Removes node from the tree.
+    function removeNode(removedNode, nodes) {
+        for (let i = 0; i < nodes.length; i++) {
+            if (nodes[i].te == removedNode.te) {
+                nodes.splice(i, 1);
+                return true;
+            }
+            else {
+                let isDeleted = removeNode(removedNode, nodes[i].nodes);
+                if (isDeleted == true) return true;
+            }
+        }
+        return false;
+    }
 }
 
 
@@ -17544,7 +17544,6 @@ async function httpGetRootSettlements() {
         const settlements = await response.json();
         let nodes = getNodes(settlements);
         return nodes;
-        //console.log(nodes);
     }
 }
 
@@ -17553,13 +17552,6 @@ function getNodes(settlements) {
     let nodes = [];
     // Mapping data.
     settlements.forEach(settlement => {
-        //let node = {};
-        //node.te = settlement.te;
-        //node.name = settlement.nu;
-        //node.text = `${node.name} [${node.te}]`;
-        //if (settlement.children)
-        //    node.nodes = getNodes(settlement.children);
-        //nodes.push(node);
         let node = getNode(settlement);
         nodes.push(node);
     });
@@ -17588,7 +17580,6 @@ async function httpfilterNodes(searchedName, searchedType) {
         const settlements = await response.json();
         let nodes = getNodes(settlements);
         return nodes;
-        //buildTree(treeId, nodes);
     }
 }
 
@@ -17640,6 +17631,11 @@ async function httpDeleteNode(node, isCascade) {
     }
 }
 
+
+// Gets filtered settlements.
+async function httpExportNodes(searchedName, searchedType) {    
+    window.open(`api/settlements/export?name=${searchedName}&type=${searchedType}`);
+}
 // Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
 // for details on configuring this project to bundle and minify static web assets.
 
@@ -17665,6 +17661,7 @@ $(async function () {
     createNode();
     updateNode();
     deleteNode();
+    exportTree()
 });
 
 // Adds filter.
@@ -17676,6 +17673,18 @@ function addFilter() {
         const type = form.elements["type"].value;
         tree = await httpfilterNodes(name, type);
         settlementsTree.buildTree(treeId, tree);
+    });
+}
+
+// Exports tree node.
+function exportTree() {
+    let exportButton = document.querySelector("#export");
+    exportButton.addEventListener("click", async e => {
+        e.preventDefault();
+        const form = document.forms["filterForm"];
+        const name = form.elements["name"].value;
+        const type = form.elements["type"].value;
+        await httpExportNodes(name, type);
     });
 }
 
@@ -17752,7 +17761,6 @@ function deleteNodeModal(node) {
 
 // Delete a node.
 function deleteNode() {
-    console.log("Node is deleted");
     document.forms[deleteFormName].addEventListener("submit", async e => {
         e.preventDefault();
         const form = document.forms[deleteFormName];

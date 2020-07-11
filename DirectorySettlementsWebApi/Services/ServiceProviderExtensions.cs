@@ -19,6 +19,7 @@ namespace DirectorySettlementsWebApi.Services
         {
             services.AddTransient<IFilterOptions, FilterOptions>();
             services.AddTransient<IDirectoryService, DirectoryService>();
+            services.AddTransient<IExportService, ExportService>();
         }
     }
 }

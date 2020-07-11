@@ -20,16 +20,6 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="collapsibleNavbar">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
-                </li>
-            </ul>
-        </div>
     </nav>
 
     <div class="container">
@@ -42,6 +32,9 @@
             <div class="col-sm-4">
                 <h2>Доступні дії</h2>
                 <form name="filterForm">
+                    <div class="panel-body">
+                        <button type="submit" id="submit" class="btn btn-primary btn-block">Пошук</button>
+                    </div>
                     <div class="form-group">
                         <label for="name">Пошук за назвою:</label>
                         <input class="form-control" name="name" />
@@ -58,19 +51,18 @@
                         </select>
                     </div>
                     <div class="panel-body">
-                        <button type="submit" id="submit" class="btn btn-primary btn-block">Пошук</button>
+                        <button id="export" class="btn btn-primary btn-block">Експорт в PDF</button>
                     </div>
+
                 </form>
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createModal">
-                    Open modal
-                </button>
+                
             </div>
         </div>
     </div>
 
     <div class="jumbotron text-center" style="margin-bottom:0">
-        <p>Footer</p>
+        <p>&copy; 2020 Leonid Kursenko<p>
     </div>
 
     <!-- The create Modal -->

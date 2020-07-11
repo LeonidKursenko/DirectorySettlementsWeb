@@ -23,6 +23,7 @@ $(async function () {
     createNode();
     updateNode();
     deleteNode();
+    exportTree()
 });
 
 // Adds filter.
@@ -34,6 +35,18 @@ function addFilter() {
         const type = form.elements["type"].value;
         tree = await httpfilterNodes(name, type);
         settlementsTree.buildTree(treeId, tree);
+    });
+}
+
+// Exports tree node.
+function exportTree() {
+    let exportButton = document.querySelector("#export");
+    exportButton.addEventListener("click", async e => {
+        e.preventDefault();
+        const form = document.forms["filterForm"];
+        const name = form.elements["name"].value;
+        const type = form.elements["type"].value;
+        await httpExportNodes(name, type);
     });
 }
 
@@ -110,7 +123,6 @@ function deleteNodeModal(node) {
 
 // Delete a node.
 function deleteNode() {
-    console.log("Node is deleted");
     document.forms[deleteFormName].addEventListener("submit", async e => {
         e.preventDefault();
         const form = document.forms[deleteFormName];
