@@ -26,7 +26,6 @@
         <div class="row">
             <div class="col-sm-8">
                 <h2>КОАТУУ. Державний класифікатор об'єктів адміністративно-територіального устрою України</h2>
-                <p>Some text about me in culpa qui officia deserunt mollit anim..</p>
                 <div id="tree" class="settlement-tree"></div>
             </div>
             <div class="col-sm-4">
@@ -56,7 +55,18 @@
 
                 </form>
 
-                
+                <!--Error Message-->
+                <div id="errorMessageBox" class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+                    <div class="toast-header">
+                        <strong class="mr-auto alert-danger">Помилка</strong>
+                        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="errors toast-body">
+
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -176,7 +186,7 @@
                         <div class="panel-body">
                             <button type="submit" id="deleteButton" class="btn btn-primary btn-block" data-toggle="modal">Підтвердити</button>
                         </div>
-                        
+
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -185,5 +195,7 @@
             </div>
         </div>
     </div>
+
+    
 </body>
 </html>

@@ -49,7 +49,6 @@ async function httpfilterNodes(searchedName, searchedType) {
 
 // Creates a new node.
 async function httpCreateNode(node) {
-    console.log("Node is created");
     const response = await fetch("api/settlements", {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
@@ -62,6 +61,10 @@ async function httpCreateNode(node) {
     if (response.ok === true) {
         const settlement = await response.json();
         return getNode(settlement);
+    }
+    else {
+        const errorData = await response.json();
+        throw new Error(errorData);
     }
 }
 
@@ -81,6 +84,10 @@ async function httpUpdateNode(node) {
         const settlement = await response.json();
         return getNode(settlement);
     }
+    else {
+        const errorData = await response.json();
+        throw new Error(errorData);
+    }
 }
 
 // Delete a node.
@@ -92,6 +99,10 @@ async function httpDeleteNode(node, isCascade) {
     if (response.ok === true) {
         const settlement = await response.json();
         return getNode(settlement);
+    }
+    else {
+        const errorData = await response.json();
+        throw new Error(errorData);
     }
 }
 

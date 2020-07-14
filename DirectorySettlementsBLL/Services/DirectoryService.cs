@@ -120,17 +120,7 @@ namespace DirectorySettlementsBLL.Services
                 Settlement parentSettlement = await Manager.Settlements.GetAsync(parentTe);
                 settlements = parentSettlement.Children;
             }
-            // Deletes all undirect childrens.
-            //foreach(var settlement in settlements)
-            //{
-            //    settlement.Children.Clear();
-            //}
             IEnumerable<SettlementDTO> settlementDTOs = _mapper.Map<IEnumerable<Settlement>, List<SettlementDTO>>(settlements);
-            //foreach (var settlementDTO in settlementDTOs)
-            //{
-            //    settlementDTO.HasChildrenNode = settlementDTO.Children.Any();
-            //    settlementDTO.Children.Clear();
-            //}
             return settlementDTOs;
         }
 

@@ -17585,7 +17585,6 @@ async function httpfilterNodes(searchedName, searchedType) {
 
 // Creates a new node.
 async function httpCreateNode(node) {
-    console.log("Node is created");
     const response = await fetch("api/settlements", {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
@@ -17598,6 +17597,10 @@ async function httpCreateNode(node) {
     if (response.ok === true) {
         const settlement = await response.json();
         return getNode(settlement);
+    }
+    else {
+        const errorData = await response.json();
+        throw new Error(errorData);
     }
 }
 
@@ -17617,6 +17620,10 @@ async function httpUpdateNode(node) {
         const settlement = await response.json();
         return getNode(settlement);
     }
+    else {
+        const errorData = await response.json();
+        throw new Error(errorData);
+    }
 }
 
 // Delete a node.
@@ -17628,6 +17635,10 @@ async function httpDeleteNode(node, isCascade) {
     if (response.ok === true) {
         const settlement = await response.json();
         return getNode(settlement);
+    }
+    else {
+        const errorData = await response.json();
+        throw new Error(errorData);
     }
 }
 
@@ -17661,7 +17672,7 @@ $(async function () {
     createNode();
     updateNode();
     deleteNode();
-    exportTree()
+    exportTree();
 });
 
 // Adds filter.
@@ -17700,6 +17711,7 @@ function createNodeModal(node) {
     form.settlementParent = node;
 }
 
+const errorMessageBoxId = "#errorMessageBox";
 // Creates a new node.
 function createNode() {
     document.forms[createFormName].addEventListener("submit", async e => {
@@ -17709,13 +17721,20 @@ function createNode() {
         node.te = form.elements["te"].value;
         node.nu = form.elements["name"].value;
         node.np = form.elements["type"].value;
-        let createdNode = await httpCreateNode(node);
-        let parent = form.settlementParent;
-        parent.nodes.push(createdNode);
+        try {
+            let createdNode = await httpCreateNode(node);
+            let parent = form.settlementParent;
+            parent.nodes.push(createdNode);
 
-        $(createModalId).modal("toggle");
-        //settlementsTree.buildTree(treeId, tree);
-        settlementsTree.addNode(parent, parent.li);
+            $(createModalId).modal("toggle");
+            settlementsTree.addNode(parent, parent.li);
+        }
+        catch (error) {
+            $(createModalId).modal("toggle");            
+            $(errorMessageBoxId).toast('show');
+            $(`${errorMessageBoxId} div.errors`).text(error.message);
+        }
+
     });
 }
 
@@ -17739,13 +17758,20 @@ function updateNode() {
         let node = form.settlement;
         node.nu = form.elements["name"].value;
         node.np = form.elements["type"].value;
-        let updatedNode = await httpUpdateNode(node);
-        node.nu = updatedNode.nu;
-        node.np = updatedNode.np;
-        node.text = updatedNode.text;
+        try {
+            let updatedNode = await httpUpdateNode(node);
+            node.nu = updatedNode.nu;
+            node.np = updatedNode.np;
+            node.text = updatedNode.text;
 
-        $(editModalId).modal("toggle");
-        settlementsTree.editNode(node, node.li);
+            $(editModalId).modal("toggle");
+            settlementsTree.editNode(node, node.li);
+        }
+        catch (error) {
+            $(editModalId).modal("toggle");
+            $(errorMessageBoxId).toast('show');
+            $(`${errorMessageBoxId} div.errors`).text(error.message);
+        }
     });
 }
 
@@ -17767,10 +17793,16 @@ function deleteNode() {
         let node = form.settlement;
         let isCascade = form.elements["cascadeDelete"].checked;
         console.log(isCascade);
-        let deletedNode = await httpDeleteNode(node, isCascade);
+        try {
+            let deletedNode = await httpDeleteNode(node, isCascade);
 
-        $(deleteModalId).modal("toggle");
-        settlementsTree.deleteNode(node, node.li);
-        //settlementsTree.buildTree(treeId, tree);
+            $(deleteModalId).modal("toggle");
+            settlementsTree.deleteNode(node, node.li);
+        }
+        catch (error) {
+            $(deleteModalId).modal("toggle");
+            $(errorMessageBoxId).toast('show');
+            $(`${errorMessageBoxId} div.errors`).text(error.message);
+        }
     });
 }

@@ -15,6 +15,9 @@ using AutoMapper;
 using DirectorySettlementsWebApi.Models;
 using Microsoft.AspNetCore.DataProtection.XmlEncryption;
 using DirectorySettlementsBLL.BusinessModels;
+using DirectorySettlementsBLL.Exceptions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Logging;
 
 namespace DirectorySettlementsWebApi.Controllers
 {
@@ -25,9 +28,11 @@ namespace DirectorySettlementsWebApi.Controllers
         private readonly IDirectoryService _directoryService;
         private readonly IExportService _exportService;
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
 
-        public SettlementsController(IDirectoryService directoryService, IExportService exportService)
+        public SettlementsController(ILogger<SettlementsController> logger, IDirectoryService directoryService, IExportService exportService)
         {
+            _logger = logger;
             _directoryService = directoryService;
             _exportService = exportService;
             _mapper = new MapperConfiguration(cfg => cfg.CreateMap<SettlementDTO, Node>()).CreateMapper();
@@ -59,7 +64,9 @@ namespace DirectorySettlementsWebApi.Controllers
             var settlementDTOs = await _directoryService.FilterAsync(options);
             if (settlementDTOs == null || settlementDTOs.Any() == false)
             {
-                return NotFound();
+                string message = "Settlements not found.";
+                _logger.LogWarning(message);
+                return NotFound(message);
             }
             IEnumerable<Node> nodes = _mapper.Map<IEnumerable<SettlementDTO>, List<Node>>(settlementDTOs);
             return Ok(nodes.ToList());
@@ -73,7 +80,9 @@ namespace DirectorySettlementsWebApi.Controllers
             var settlementDTO = await _directoryService.GetAsync(te);
             if (settlementDTO == null)
             {
-                return NotFound($"Failed to find a node with TE={te}.");
+                string message = $"Failed to find a node with TE={te}.";
+                _logger.LogWarning(message);
+                return NotFound(message);
             }
             Node node = _mapper.Map<Node>(settlementDTO);
             return Ok(node);
@@ -85,7 +94,9 @@ namespace DirectorySettlementsWebApi.Controllers
         {
             if (node == null || te != node.Te)
             {
-                return BadRequest($"Failed to update operation.");
+                string message = $"Failed to update operation.";
+                _logger.LogWarning(message);
+                return BadRequest(message);
             }
             SettlementDTO settlementDTO = new SettlementDTO
             {
@@ -98,17 +109,19 @@ namespace DirectorySettlementsWebApi.Controllers
             {
                 await _directoryService.UpdateAsync(settlementDTO);                
             }
-            catch (Exception ex)
+            catch (ValidationException ex)
             {
-                bool isExists = await SettlementExistsAsync(te);
-                if (!isExists)
-                {
-                    return NotFound($"Failed to update unexisted node with TE={te}.");
-                }
-                else
-                {
-                    throw;
-                }
+                _logger.LogWarning(ex.Message);
+                return BadRequest(ex.Message);
+                //bool isExists = await SettlementExistsAsync(te);
+                //if (!isExists)
+                //{
+                //    return NotFound($"Failed to update unexisted node with TE={te}.");
+                //}
+                //else
+                //{
+                //    throw;
+                //}
             }
             //return NoContent();
             return Ok(node);
@@ -120,7 +133,9 @@ namespace DirectorySettlementsWebApi.Controllers
         {
             if (node == null)
             {
-                return BadRequest("Failed to create empty node.");
+                string message = "Failed to create empty node.";
+                _logger.LogWarning(message);
+                return BadRequest(message);
             }
             SettlementDTO settlementDTO = new SettlementDTO
             {
@@ -133,8 +148,9 @@ namespace DirectorySettlementsWebApi.Controllers
             {
                 await _directoryService.CreateAsync(settlementDTO);
             }
-            catch (Exception ex)
+            catch (ValidationException ex)
             {
+                _logger.LogWarning(ex.Message);
                 bool isExists = await SettlementExistsAsync(settlementDTO.Te);
                 if (isExists)
                 {
@@ -156,14 +172,17 @@ namespace DirectorySettlementsWebApi.Controllers
             SettlementDTO settlementDTO = await _directoryService.GetAsync(te);
             if (settlementDTO == null)
             {
-                return NotFound($"Failed to delete unexisted node with TE={te}.");
+                string message = $"Failed to delete unexisted node with TE={te}.";
+                _logger.LogWarning(message);
+                return NotFound(message);
             }
             try
             {
                 await _directoryService.DeleteAsync(te, cascade);
             }
-            catch(Exception ex)
+            catch(ValidationException ex)
             {
+                _logger.LogWarning(ex.Message);
                 return BadRequest($"Failed to delete node with TE={te}.");
             }
 
